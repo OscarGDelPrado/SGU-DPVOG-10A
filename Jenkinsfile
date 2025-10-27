@@ -7,7 +7,7 @@ pipeline {
         stage('Limpiando Recursos del Proyecto...') {
             steps {
                 bat '''
-                    docker compose -p sgu-aiag-10a down -v --remove-orphans || exit /b 0
+                    docker compose -p sgu-dpvog-10a down -v --remove-orphans || exit /b 0
                     echo Intentando eliminar volumen sgu-volume...
                     docker volume rm -f sgu-volume || exit /b 0
                 '''
