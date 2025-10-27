@@ -2,11 +2,17 @@ pipeline {
     agent any
 
     stages {
-        // Parar los servicios que ya existen o en todo caso hacer caso omiso
-        stage('Parando los servicios...') {
+        // Parar y limpiar completamente los recursos del proyecto anterior.
+        stage('Limpieza Profunda de Proyecto') {
             steps {
                 bat '''
-                    docker-compose -p sgu-dpvog-10a down || exit /b 0
+                    REM Parar y eliminar contenedores, redes y volumenes del compose.
+                    docker compose -p sgu-dpvog-10a down -v --remove-orphans || exit /b 0
+
+                    REM Eliminar forzadamente contenedores por nombre para evitar conflictos.
+                    docker rm -f sgu-database || exit /b 0
+                    docker rm -f sgu-backend || exit /b 0
+                    docker rm -f sgu-frontend || exit /b 0
                 '''
             }
         }
@@ -38,7 +44,7 @@ pipeline {
         stage('Construyendo y desplegando servicios...') {
             steps {
                 bat '''
-                    docker-compose up --build -d
+                    docker compose -p sgu-dpvog-10a up --build -d
                 '''
             }
         }
