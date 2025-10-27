@@ -1,29 +1,12 @@
-
 pipeline {
     agent any
 
     stages {
-
-        stage('Limpiando Recursos del Proyecto...') {
+        // Parar los servicios que ya existen o en todo caso hacer caso omiso
+        stage('Parando los servicios...') {
             steps {
                 bat '''
-                    docker compose -p sgu-dpvog-10a down -v --remove-orphans || exit /b 0
-                    echo Intentando eliminar volumen sgu-volume...
-                    docker volume rm -f sgu-volume || exit /b 0
-                '''
-            }
-        }
-        
-        // 2. Limpieza Forzada de Contenedores con Nombre Fijo (soluciona el error "Conflict")
-        stage('Pre-limpieza Forzada (Conflicto General)') {
-            steps {
-                bat '''
-                    echo Intentando eliminar contenedores con nombre fijo conflictivos...
-                    // Eliminar forzadamente contenedores por nombre.
-                    docker rm -f sgu-database || exit /b 0
-                    docker rm -f sgu-backend || exit /b 0
-                    docker rm -f sgu-frontend || exit /b 0
-                    echo Limpieza de nombres fijos completada.
+                    docker-compose -p sgu-dpvog-10a down || exit /b 0
                 '''
             }
         }
@@ -44,19 +27,18 @@ pipeline {
             }
         }
 
-        // Del recurso SCM configurado en el job, jala el repo (checkout)
+        // Del recurso SCM configurado en el job, jala el repo
         stage('Obteniendo actualización...') {
             steps {
-                // Descarga el código fuente del repositorio Git
                 checkout scm
             }
         }
 
         // Construir y levantar los servicios
-        stage('Construyendo y Desplegando Servicios...') {
+        stage('Construyendo y desplegando servicios...') {
             steps {
                 bat '''
-                    docker compose -p sgu-dpvog-10a up --build -d
+                    docker-compose up --build -d
                 '''
             }
         }
@@ -76,3 +58,4 @@ pipeline {
         }
     }
 }
+
