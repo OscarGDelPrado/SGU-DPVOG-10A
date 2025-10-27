@@ -15,7 +15,7 @@ pipeline {
         // Construir y levantar los servicios
         stage('Construyendo y Desplegando Servicios...') {
             steps {
-                bat '''
+                powershell '''
                     docker compose -p sgu-dpvog-10a up --build -d
                 '''
             }
