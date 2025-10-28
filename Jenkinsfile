@@ -21,13 +21,16 @@ pipeline {
         stage('Eliminando imágenes anteriores...') {
             steps {
                 bat '''
+                    set "images_found="
                     for /f "tokens=*" %%i in ('docker images --filter "label=com.docker.compose.project=sgu-dpvog-10a" -q') do (
                         docker rmi -f %%i
+                        set "images_found=true"
                     )
-                    if errorlevel 1 (
-                        echo No hay imagenes por eliminar
-                    ) else (
+
+                    if defined images_found (
                         echo Imagenes eliminadas correctamente
+                    ) else (
+                        echo No hay imagenes por eliminar
                     )
                 '''
             }

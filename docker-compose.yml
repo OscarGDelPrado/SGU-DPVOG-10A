@@ -50,8 +50,6 @@ services:
 
 volumes:
   sgu-volume:
-    external: true
 
 networks:
   sgu-net:
-    external: true
